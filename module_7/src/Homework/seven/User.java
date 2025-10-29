@@ -1,17 +1,18 @@
 package Homework.seven;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class User {
+public class User implements Serializable {
+  private static final long serialVersionUID = 1L;
+
   private final String name;
 
   public User(String name) {
     this.name = (name == null || name.trim().isEmpty()) ? "Unknown" : name.trim();
   }
 
-  public String getName() {
-    return name;
-  }
+  public String getName() { return name; }
 
   @Override public String toString() { return name; }
 
@@ -23,7 +24,5 @@ public class User {
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(name);
-  }
+  public int hashCode() { return Objects.hash(name); }
 }
