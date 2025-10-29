@@ -1,6 +1,7 @@
 package Homework.seven;
-import java.util.*;
 
+import java.util.List;
+import java.util.Scanner;
 
 public class TwitterConsoleApp {
   private static final Scanner scanner = new Scanner(System.in);
@@ -14,7 +15,7 @@ public class TwitterConsoleApp {
     System.out.print("Введите ваше имя: ");
     String userName = scanner.nextLine().trim();
     User currentUser = new User(userName);
-    System.out.println("Добро пожаловать, " + currentUser.getName() + "!");
+    System.out.println("Добро пожаловать, " + currentUser.getName() + "!\n");
 
     twitterService.initializePosts();
 
@@ -22,26 +23,56 @@ public class TwitterConsoleApp {
       showMenu();
       int choice = getIntInput();
       switch (choice) {
-        case 7 -> {
-          System.out.println("Выход...");
-          return;
-        }
+        case 1 -> handleCreatePost(currentUser);
+        case 2 -> handleLike();
+        case 3 -> handleRepost();
+        case 4 -> handleShowAll();
+        case 5 -> handleShowPopular();
+        case 6 -> handleShowMyPosts(currentUser);
+        case 7 -> { System.out.println("Выход..."); return; }
         default -> System.out.println("Некорректный ввод. Попробуйте снова.");
       }
     }
   }
 
-  private int getIntInput() {
-    int input;
-    try {
-      input = Integer.parseInt(scanner.nextLine().trim());
-    } catch (NumberFormatException e) {
-      System.out.println("Некорректный ввод.");
-      return -1;
-    }
-    return input;
+  // ====== Handlers ======
+  private void handleCreatePost(User currentUser) {
+    System.out.print("Введите текст поста (макс. 280 символов): ");
+    String content = scanner.nextLine();
+    Post p = twitterService.createPost(currentUser, content);
+    if (p != null) System.out.println("Пост добавлен!");
+    else System.out.println("Пост не добавлен (пустой или длиннее 280 символов).");
   }
 
+  private void handleLike() {
+    long id = askLong("ID поста для лайка: ");
+    boolean ok = twitterService.likePost(id);
+    System.out.println(ok ? "Лайк засчитан." : "Пост с таким ID не найден.");
+  }
+
+  private void handleRepost() {
+    long id = askLong("ID поста для репоста: ");
+    boolean ok = twitterService.repost(id);
+    System.out.println(ok ? "Сделан репост." : "Пост с таким ID не найден.");
+  }
+
+  private void handleShowAll() {
+    System.out.println("\nВсе посты (новые → старые):");
+    printPosts(twitterService.findAllSortedByDateDesc());
+  }
+
+  private void handleShowPopular() {
+    int n = askInt("Сколько популярных постов показать? ");
+    System.out.println("\nПопулярные посты:");
+    printPosts(twitterService.findTopLiked(n));
+  }
+
+  private void handleShowMyPosts(User currentUser) {
+    System.out.println("\nМои посты:");
+    printPosts(twitterService.findByAuthor(currentUser));
+  }
+
+  // ====== IO helpers ======
   private static void showMenu() {
     System.out.println("\n=== Twitter Console ===");
     System.out.println("1. Написать пост");
@@ -54,4 +85,42 @@ public class TwitterConsoleApp {
     System.out.print("Выберите действие: ");
   }
 
+  private int getIntInput() {
+    try {
+      return Integer.parseInt(scanner.nextLine().trim());
+    } catch (NumberFormatException e) {
+      return -1;
+    }
+  }
+
+  private int askInt(String prompt) {
+    while (true) {
+      System.out.print(prompt);
+      try {
+        int v = Integer.parseInt(scanner.nextLine().trim());
+        return Math.max(0, v);
+      } catch (NumberFormatException e) {
+        System.out.println("Введите число.");
+      }
+    }
+  }
+
+  private long askLong(String prompt) {
+    while (true) {
+      System.out.print(prompt);
+      try {
+        return Long.parseLong(scanner.nextLine().trim());
+      } catch (NumberFormatException e) {
+        System.out.println("Введите число.");
+      }
+    }
+  }
+
+  private void printPosts(List<Post> list) {
+    if (list.isEmpty()) {
+      System.out.println("(пусто)");
+      return;
+    }
+    for (Post p : list) System.out.println(p);
+  }
 }
