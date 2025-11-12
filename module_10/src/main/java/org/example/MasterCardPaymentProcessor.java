@@ -1,7 +1,10 @@
 package org.example;
 
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 
+@Component("mastercardProcessor")
 public class MasterCardPaymentProcessor implements PaymentProcessor {
     @Override
     public void processPayment(BigDecimal amount) {

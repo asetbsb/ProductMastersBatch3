@@ -1,5 +1,5 @@
 package org.example;
 
 public enum PaymentMethodEnum {
-    VISA, MASTERCARD
+    VISA, MASTERCARD, BITCOIN, PLOVCOIN
 }
