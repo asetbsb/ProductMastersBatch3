@@ -13,16 +13,22 @@ import java.util.Objects;
 public class RoleFilter implements Filter {
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request,
+                         ServletResponse response,
+                         FilterChain chain) throws IOException, ServletException {
+
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
 
         HttpSession session = req.getSession(false);
+        String role = session != null ? (String) session.getAttribute("role") : null;
 
-        if (!Objects.isNull(session)
-                && "teacher".equalsIgnoreCase((String) session.getAttribute("role"))) {
+        // пускаем и teacher, и student
+        if (!Objects.isNull(role)
+                && ("teacher".equalsIgnoreCase(role) || "student".equalsIgnoreCase(role))) {
             chain.doFilter(request, response);
         } else {
+            resp.setContentType("text/html; charset=UTF-8");
             resp.getWriter().println("У вас нет доступа к этой странице");
         }
     }
