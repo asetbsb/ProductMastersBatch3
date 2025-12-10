@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Посещение лекций</title>
+    <style>
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Посещение лекций</h2>
+
+<!-- Форма только для преподавателя -->
+<div th:if="${isTeacher}">
+    <form th:action="@{/attendance/add}" method="post" th:object="${newStudent}">
+        ФИО: <input type="text" th:field="*{name}" required/><br>
+        Группа: <input type="text" th:field="*{groupName}" required/><br>
+        Посетил:
+        <select th:field="*{attended}">
+            <option th:value="true">Да</option>
+            <option th:value="false">Нет</option>
+        </select>
+        <br>
+        <button type="submit">Добавить</button>
+    </form>
+</div>
+
+<table>
+    <tr>
+        <th>ФИО</th>
+        <th>Группа</th>
+        <th>Посетил</th>
+    </tr>
+
+    <tr th:each="s : ${students}">
+        <td th:text="${s.name}">Имя</td>
+        <td th:text="${s.groupName}">Группа</td>
+        <td th:text="${s.attended} ? 'Да' : 'Нет'">Да/Нет</td>
+    </tr>
+</table>
+
+<br>
+<a th:href="@{/logout}">Выйти</a>
+
+</body>
+</html>
